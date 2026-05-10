@@ -337,6 +337,7 @@
             let pauseTimer = null;
             const autoInterval = 6000;
             const pauseAfterManual = 10000;
+            let isAnimating = false;   // 动画锁
 
             function setBg(el, imgSrc) {
                 el.style.backgroundImage = `url('${imgSrc}')`;
@@ -350,25 +351,39 @@
                 nextSlide.style.transform = 'translateX(100%)';
             }
 
+            // 向右切换（下一张）
             function slideToNext() {
+                if (isAnimating) return;
+                isAnimating = true;
+
                 activeSlide.style.transform = 'translateX(-100%)';
                 nextSlide.style.transform = 'translateX(0)';
 
                 const onFinish = () => {
                     activeSlide.removeEventListener('transitionend', onFinish);
+                    // 重置已经滑出的activeSlide到右侧，准备下一次
                     activeSlide.style.transition = 'none';
                     activeSlide.style.transform = 'translateX(100%)';
                     currentIndex = (currentIndex + 1) % images.length;
                     const newNext = (currentIndex + 1) % images.length;
                     setBg(activeSlide, images[newNext]);
+                    // 强制重绘
                     void activeSlide.offsetWidth;
                     activeSlide.style.transition = '';
+                    // 交换引用
                     [activeSlide, nextSlide] = [nextSlide, activeSlide];
+                    isAnimating = false;
                 };
+
                 activeSlide.addEventListener('transitionend', onFinish);
             }
 
+            // 向左切换（上一张）
             function slideToPrev() {
+                if (isAnimating) return;
+                isAnimating = true;
+
+                // 将nextSlide瞬间放到左侧，准备滑入
                 nextSlide.style.transition = 'none';
                 const prevIdx = (currentIndex - 1 + images.length) % images.length;
                 setBg(nextSlide, images[prevIdx]);
@@ -376,11 +391,13 @@
                 void nextSlide.offsetWidth;
                 nextSlide.style.transition = '';
 
+                // 当前activeSlide向右滑出，nextSlide滑入中央
                 activeSlide.style.transform = 'translateX(100%)';
                 nextSlide.style.transform = 'translateX(0)';
 
                 const onFinish = () => {
                     activeSlide.removeEventListener('transitionend', onFinish);
+                    // 重置activeSlide到左侧，准备下一次
                     activeSlide.style.transition = 'none';
                     activeSlide.style.transform = 'translateX(-100%)';
                     currentIndex = prevIdx;
@@ -389,7 +406,9 @@
                     void activeSlide.offsetWidth;
                     activeSlide.style.transition = '';
                     [activeSlide, nextSlide] = [nextSlide, activeSlide];
+                    isAnimating = false;
                 };
+
                 activeSlide.addEventListener('transitionend', onFinish);
             }
 
