@@ -677,13 +677,10 @@
             if (saved) {
                 try {
                     var data = JSON.parse(saved);
-                    // 读取后台保存的欢迎标题
                     if (data.welcomeTitle) document.getElementById('welcomeTitleZh').textContent = data.welcomeTitle;
                     if (data.welcomeTitleEn) document.getElementById('welcomeTitleEn').textContent = data.welcomeTitleEn;
-                    // 读取后台保存的地铁告示栏内容
                     if (data.subwayDate) document.getElementById('subwayDate').textContent = '更新日期：' + data.subwayDate;
                     if (data.subwayText) document.getElementById('subwayText').textContent = data.subwayText;
-                    // 读取后台保存的公交告示栏内容
                     if (data.busDate) document.getElementById('busDate').textContent = '更新日期：' + data.busDate;
                     if (data.busText) document.getElementById('busText').textContent = data.busText;
                 } catch (e) {}
@@ -697,7 +694,6 @@
             var STORAGE_KEY = 'wanbriefing_content';
             var saved = localStorage.getItem(STORAGE_KEY);
             var customImages = null;
-            // 读取后台保存的轮播图片 URL
             if (saved) {
                 try {
                     var data = JSON.parse(saved);
@@ -709,7 +705,6 @@
                     }
                 } catch (e) {}
             }
-            // 默认轮播图片列表（如后台未配置则使用本地图片）
             var images = customImages || [
                 'background1.png',
                 'background2.png',
@@ -720,7 +715,6 @@
             var prevBtn = document.getElementById('prevBtn');
             var nextBtn = document.getElementById('nextBtn');
 
-            // 创建两个 slide 元素用于交替切换
             var slide1 = document.createElement('div');
             var slide2 = document.createElement('div');
             slide1.className = 'slide';
@@ -733,9 +727,9 @@
             var nextSlide = slide2;
             var autoTimer = null;
             var pauseTimer = null;
-            var autoInterval = 6000;       // 自动轮播间隔（毫秒）
-            var pauseAfterManual = 10000;  // 手动切换后暂停时长
-            var isAnimating = false;       // 动画锁，防止连续点击
+            var autoInterval = 6000;
+            var pauseAfterManual = 10000;
+            var isAnimating = false;
 
             function setBg(el, imgSrc) {
                 el.style.backgroundImage = "url('" + imgSrc + "')";
@@ -749,7 +743,6 @@
                 nextSlide.style.transform = 'translateX(100%)';
             }
 
-            // 向右切换（下一张）
             function slideToNext() {
                 if (isAnimating) return;
                 isAnimating = true;
@@ -769,7 +762,6 @@
                 activeSlide.addEventListener('transitionend', onFinish);
             }
 
-            // 向左切换（上一张）
             function slideToPrev() {
                 if (isAnimating) return;
                 isAnimating = true;
@@ -816,25 +808,19 @@
     <script>
         (function() {
             var audio = new Audio();
-            var playlist = [];     // 播放列表：{ name, url, isLocal }
-            var currentIndex = -1; // 当前播放索引，-1 表示未选中
+            var playlist = [];
+            var currentIndex = -1;
             var isPlaying = false;
 
-            // ---- 播放模式 ----
-            // 'sequential' 顺序播放（列表循环）
-            // 'single'      单曲循环
-            // 'shuffle'     随机播放
             var playModes = ['sequential', 'single', 'shuffle'];
             var playModeLabels = { sequential: '↻', single: '🔂', shuffle: '⇄' };
             var playModeTitles = { sequential: '顺序播放', single: '单曲循环', shuffle: '随机播放' };
             var savedMode = localStorage.getItem('playerMode');
             var currentModeIndex = playModes.indexOf(savedMode) >= 0 ? playModes.indexOf(savedMode) : 0;
 
-            // ---- 音量 ----
             var savedVolume = localStorage.getItem('playerVolume');
             audio.volume = savedVolume !== null ? parseFloat(savedVolume) : 0.8;
 
-            // ---- DOM 元素引用 ----
             var player = document.getElementById('musicPlayer');
             var playerMini = document.getElementById('playerMini');
             var playerExpanded = document.getElementById('playerExpanded');
@@ -858,24 +844,19 @@
             var fileInput = document.getElementById('fileInput');
             var playlistEl = document.getElementById('playlist');
 
-            // ---- 初始化 ----
             volumeFill.style.width = (audio.volume * 100) + '%';
             updateVolumeIcon();
             updateModeBtn();
 
-            // ---- 仓库预置音乐列表 ----
-            // 在此添加仓库中的音乐文件，name 为显示名，url 为文件路径
             var repoMusic = [
                 { name: '罗大佑 - 首都', url: '08. 罗大佑 - 首都.mp3' },
                 { name: 'audio (6)', url: 'audio (6).wav' }
             ];
-            // 将仓库音乐加入播放列表
             repoMusic.forEach(function(track) {
                 playlist.push({ name: track.name, url: track.url, isLocal: false });
             });
             updateTrackDisplay();
 
-            // ---- 工具函数 ----
             function formatTime(sec) {
                 if (!sec || isNaN(sec)) return '0:00';
                 var m = Math.floor(sec / 60);
@@ -912,7 +893,6 @@
                 }
             }
 
-            // ---- 播放列表渲染 ----
             function renderPlaylist() {
                 playlistEl.innerHTML = '';
                 if (playlist.length === 0) {
@@ -938,7 +918,6 @@
                 });
             }
 
-            // ---- 播放控制 ----
             function playTrack(index) {
                 if (index < 0 || index >= playlist.length) return;
                 currentIndex = index;
@@ -969,7 +948,6 @@
                 updatePlayButtons();
             }
 
-            // 获取下一首索引（根据播放模式）
             function getNextIndex() {
                 var mode = playModes[currentModeIndex];
                 if (mode === 'single') return currentIndex;
@@ -982,7 +960,6 @@
                 return (currentIndex + 1) % playlist.length;
             }
 
-            // 获取上一首索引
             function getPrevIndex() {
                 var mode = playModes[currentModeIndex];
                 if (mode === 'single') return currentIndex;
@@ -995,9 +972,7 @@
                 return (currentIndex - 1 + playlist.length) % playlist.length;
             }
 
-            // 删除曲目
             function removeTrack(index) {
-                // 仓库音乐标记为 isLocal=false，也可以删除（仅从列表移除，不删除文件）
                 if (playlist[index].isLocal) {
                     URL.revokeObjectURL(playlist[index].url);
                 }
@@ -1018,7 +993,6 @@
                 renderPlaylist();
             }
 
-            // ---- 事件绑定 ----
             miniPlayBtn.addEventListener('click', togglePlay);
             playBtn.addEventListener('click', togglePlay);
 
@@ -1032,14 +1006,12 @@
                 playTrack(getNextIndex());
             });
 
-            // 切换播放模式
             modeBtn.addEventListener('click', function() {
                 currentModeIndex = (currentModeIndex + 1) % playModes.length;
                 localStorage.setItem('playerMode', playModes[currentModeIndex]);
                 updateModeBtn();
             });
 
-            // 展开/收起播放器
             expandBtn.addEventListener('click', function() {
                 player.classList.remove('minimized');
                 playerMini.style.display = 'none';
@@ -1052,7 +1024,6 @@
                 playerExpanded.style.display = 'none';
             });
 
-            // 上传本地音乐
             uploadBtn.addEventListener('click', function() { fileInput.click(); });
 
             fileInput.addEventListener('change', function(e) {
@@ -1074,7 +1045,6 @@
                 }
             });
 
-            // 进度更新
             audio.addEventListener('timeupdate', function() {
                 if (!audio.duration) return;
                 var pct = (audio.currentTime / audio.duration) * 100;
@@ -1086,7 +1056,6 @@
                 totalTimeEl.textContent = formatTime(audio.duration);
             });
 
-            // 播放结束：根据模式切歌
             audio.addEventListener('ended', function() {
                 if (playlist.length > 1 || playModes[currentModeIndex] === 'single') {
                     playTrack(getNextIndex());
@@ -1098,7 +1067,6 @@
                 }
             });
 
-            // 进度条点击跳转
             progressBar.addEventListener('click', function(e) {
                 if (!audio.duration) return;
                 var rect = progressBar.getBoundingClientRect();
@@ -1106,7 +1074,6 @@
                 audio.currentTime = pct * audio.duration;
             });
 
-            // 音量条点击调节
             volumeBar.addEventListener('click', function(e) {
                 var rect = volumeBar.getBoundingClientRect();
                 var pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
@@ -1117,14 +1084,12 @@
                 localStorage.setItem('playerVolume', pct.toString());
             });
 
-            // 静音切换
             volumeIcon.addEventListener('click', function() {
                 audio.muted = !audio.muted;
                 volumeFill.style.width = audio.muted ? '0%' : (audio.volume * 100) + '%';
                 updateVolumeIcon();
             });
 
-            // 初始渲染播放列表
             renderPlaylist();
         })();
     </script>
